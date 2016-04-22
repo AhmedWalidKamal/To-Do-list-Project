@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <title>ToDoList</title>
+     <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+ 
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  
+    <!-- Latest compiled JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+ 
+    <!-- Using the coreect character set-->
+    <meta charset="utf-8">
+ 
+    <!--Mobile compatibility-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+    <link rel="stylesheet" type="text/css" href="ProjectUbuntu.css">
+
+<!-- jQuery Scriptting -->
+<script>                                   
+$("ProjectPh1V1").ready(function() {
+
+    /// This function adjusts the problem of filling the squares on clicking for the icons on the left of the page and displays the choice of the user.
+     var selector = '.nav li';        // Here i want to select with the id not the class, it doesn't work for some reason...
+     $(selector).on('click', function(){      
+        $(selector).removeClass('active');
+        $(this).addClass('active');
+        var value = '#555';
+        value = $(this).val();
+        if (value == 1)
+        {
+            $("h3").text("All Tasks");
+            // Going to add displaying all the tasks here, same with the other if else branches.
+        }     
+        else if (value == 2)
+           $("h3").text("In Progress");
+        else if (value == 3)
+           $("h3").text("Completed Tasks");
+        else if (value == 4)
+           $("h3").text("Archived");  
+      });
+
+      $('#datepicker').datepicker();
+
+});
+
+</script>
+</head>
+ 
+<body>
+ 
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">TodoList</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+      
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-user"></span> Mohamed Tolba<span class="caret"></span> </a>
+        <ul class="dropdown-menu" role="menu">
+        <li><a href="#">Profile</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Sync now</a></li>
+            <li><a href="#">Tell your friends</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Help</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row content">
+        <div class="col-sm-2 sidenav" id="leftmenu">
+            <ul class="nav nav-pills nav-stacked" id="555">
+                 
+                <li value=1><a href="#section1" >All Tasks</a></li>
+                <li value=2><a href="#section2" >In Progress</a></li>
+                <li value=3><a href="#section3">Completed Tasks</a></li>
+                <li value=4><a href="#section4">Archived</a></li>
+                <li value=5><a href="#section5"><span class="glyphicon glyphicon-plus"></span> Create list</a></li>
+            </ul><br>
+        </div>
+
+        <div class="col-sm-10">
+            <h3></h3>
+            <hr>
+            <!-- Creating the add task button and the modal to be opened when it's clicked. -->
+            <a href="#" class="btn btn-primary" id="addbutton" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add Task</a><br>
+            <div class="modal" id="myModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label class="control-label" for="focusedInput">Task Name</label>
+                      <input class="form-control" id="focusedInput" type="text">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="inputDefault">Task Description</label>
+                      <input type="text" class="form-control" id="inputDefault">
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="inputDefault">Task Due Date</label>
+                      <input type="text" class="form-control" id="datepicker">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <!--When the user presses cancel, we need to make sure that all fields are cleared-->
+                    <button type="button" class="btn btn-primary">Add Task</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+ 
+</body>
+</html>
