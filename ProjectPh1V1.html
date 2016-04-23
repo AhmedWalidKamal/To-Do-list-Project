@@ -43,12 +43,205 @@ var allTasksArr = [];
 var currTasksArr = [];
 var completedTasksArr = [];
 var archivedTasksArr = [];
-var allCount = 0;
-var currCount = 0;
-var completedCount = 0;
-var archivedCount = 0;
-var value;
+var value = 1;
 var rowINDEX;
+var myGlobalIndex;
+
+// Updating the sizes to be displayed in the left menu
+function updateSize()
+{
+    $('#allsize').text(allTasksArr.length); 
+    $('#currsize').text(currTasksArr.length);
+    $('#completedsize').text(completedTasksArr.length);
+    $('#archivedsize').text(archivedTasksArr.length);
+}
+
+// Deleting function
+function deleteTask()
+{        
+        var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array  
+        $('#datatable tbody').on( 'click', 'tr', function () {
+              rowINDEX = table.row(this).index();
+        }); 
+        var table = $('#datatable').DataTable();
+ 
+        $('#datatable').on( 'click', '#Delete', function () {
+          var r = confirm("Are you sure you want to delete this task ?");
+               if (r == true)
+               {
+                    if (value == 1)
+                    {
+                        var taskToMove = allTasksArr[rowINDEX];
+                        if (allTasksArr[rowINDEX].status == 1)
+                        {
+                            var currentIndex = currTasksArr.indexOf(taskToMove);
+                            currTasksArr.splice(currentIndex, 1);
+                            allTasksArr.splice(rowINDEX, 1);
+                            table
+                            .row( $(this).parents('tr') )
+                            .remove()
+                            .draw(false);
+                        }
+                        else if (allTasksArr[rowINDEX].status == 0)
+                        {
+                            var completedIndex = completedTasksArr.indexOf(taskToMove);
+                            completedTasksArr.splice(completedIndex, 1);
+                            allTasksArr.splice(rowINDEX,1);
+                            table
+                            .row( $(this).parents('tr') )
+                            .remove()
+                            .draw(false);   
+                        }
+                    }
+                    else if (value == 2)
+                    {
+                        var taskToMove = currTasksArr[rowINDEX];
+                        var allIndex = allTasksArr.indexOf(taskToMove);
+                        currTasksArr.splice(rowINDEX, 1);
+                        allTasksArr.splice(allIndex, 1);
+                        table
+                        .row( $(this).parents('tr'))
+                        .remove()
+                        .draw(false);
+                    }
+                    else if (value == 3)
+                    {
+                        var taskToMove = completedTasksArr[rowINDEX];
+                        var allIndex = allTasksArr.indexOf(taskToMove);
+                        completedTasksArr.splice(rowINDEX, 1);
+                        allTasksArr.splice(allIndex, 1);
+                        table
+                        .row( $(this).parents('tr') )
+                        .remove()
+                        .draw(false);
+                        
+                    }
+                    else if (value == 4)
+                    {
+                      archivedTasksArr.splice(rowINDEX,1);
+                      table
+                        .row( $(this).parents('tr'))
+                        .remove()
+                        .draw(false);
+                    }                
+                }
+                updateSize();        
+        });
+}
+
+// Move tasks to completed area
+function moveComplete()
+{
+    var table = $('#datatable').DataTable();   
+    $('#datatable tbody').on( 'click', 'tr', function () {
+          rowINDEX = table.row(this).index();
+    }); 
+    var table = $('#datatable').DataTable();
+
+    $('#datatable').on('click', '#done', function (){
+              var movableTask;
+              if (value == 1)
+              {
+                  movableTask = allTasksArr[rowINDEX];
+                  if (movableTask.status != 0 && movableTask.status != -1)
+                  {
+                      var currIndex = currTasksArr.indexOf(movableTask);
+                      currTasksArr.splice(currIndex, 1);
+                      allTasksArr[rowINDEX].status = 0;
+                      completedTasksArr.push(movableTask);  
+                      updateSize();          
+                  }    
+              }
+              else if (value == 2)
+              {
+                  movableTask = currTasksArr[rowINDEX];
+                  if (movableTask.status != 0 && movableTask.status != -1)
+                  {
+                      var allIndex = allTasksArr.indexOf(movableTask);
+                      currTasksArr.splice(rowINDEX, 1);
+                      allTasksArr[allIndex].status = 0;
+                      completedTasksArr.push(movableTask);  
+                      table.row( $(this).parents('tr')).remove().draw();
+                      updateSize();
+                  }
+              }
+    });  
+}
+
+function moveArchive()
+{
+    var table = $('#datatable').DataTable();   
+    $('#datatable tbody').on( 'click', 'tr', function () {
+          rowINDEX = table.row(this).index();
+    }); 
+    var table = $('#datatable').DataTable();
+
+    $('#datatable').on('click', '#save', function (){
+              var movableTask;
+              if (value == 1)
+              {
+                  movableTask = allTasksArr[rowINDEX];
+                  if (movableTask.status == 1)
+                  {
+                      var currIndex = currTasksArr.indexOf(movableTask);
+                      currTasksArr.splice(currIndex, 1);
+                      allTasksArr.splice(rowINDEX, 1);
+                      archivedTasksArr.push(movableTask);
+                      table.row( $(this).parents('tr')).remove().draw();
+                      updateSize();
+                  }
+                  else if (movableTask.status == 0)
+                  {
+                      var completedIndex = completedTasksArr.indexOf(movableTask);
+                      completedTasksArr.splice(completedIndex, 1);
+                      allTasksArr.splice(rowINDEX, 1);
+                      archivedTasksArr.push(movableTask);
+                      table.row( $(this).parents('tr')).remove().draw();
+                      updateSize();
+                  }    
+              }
+              else if (value == 2)
+              {
+                  movableTask = currTasksArr[rowINDEX];
+                  
+                  var allIndex = allTasksArr.indexOf(movableTask);
+                  currTasksArr.splice(rowINDEX, 1);
+                  allTasksArr.splice(allIndex, 1);
+                  archivedTasksArr.push(movableTask);  
+                  table.row( $(this).parents('tr')).remove().draw();
+                  updateSize();
+                  
+              }
+              else if (value == 3)
+              {
+                  movableTask = completedTasksArr[rowINDEX];
+                  var allIndex = allTasksArr.indexOf(movableTask);
+                  allTasksArr.splice(allIndex, 1);
+                  completedTasksArr.splice(rowINDEX, 1);
+                  archivedTasksArr.push(movableTask);
+                  table.row( $(this).parents('tr')).remove().draw();
+                  updateSize();
+              }
+    }); 
+}
+
+function editTask()
+{
+    var table = $('#datatable').DataTable();   
+    $('#datatable tbody').on( 'click', 'tr', function () {
+        rowINDEX = table.row(this).index();
+    }); 
+    
+    $('#datatable').on('click', '#Edit', function (){
+              myGlobalIndex = rowINDEX;
+              // Adding the data that was there to the modal
+          
+              $('#editName').val(currTasksArr[rowINDEX].name);
+              $('#editDescrip').val(currTasksArr[rowINDEX].description);
+              $('#editDate').val(currTasksArr[rowINDEX].date);
+          
+    });
+}
 
 // Drawing the table
 function drawTable()
@@ -68,187 +261,111 @@ function drawTable()
         concat += '</table>';
         $('#here').html(concat);            
         $('#datatable').DataTable();  
+
+        deleteTask();
+        moveComplete();
+        moveArchive();
+        editTask();
 }
 
-function updateSize()
+// Child row
+function childRowMan()
 {
-    $('#allsize').text(allTasksArr.length); 
-    $('#currsize').text(currTasksArr.length);
-    $('#completedsize').text(completedTasksArr.length);
-    $('#archivedsize').text(archivedTasksArr.length);
+      var table = $('#datatable').DataTable();
+      $('#datatable').on('click', 'tr #childROW', function (){
+          var tr = $(this).closest('tr');
+          var row = table.row( tr );
+             
+          if (row.child.isShown()) 
+          {
+              // This row is already open - close it
+              row.child.hide();
+              tr.removeClass('shown');
+          }
+          else 
+          {
+              // Open this row
+              row.child(['<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">', allTasksArr[rowINDEX].description,'</table' ]).show();
+              tr.addClass('shown');
+          }
+      });
 }
 
 $("ProjectPh1V1").ready(function(){
         drawTable();
-        updateSize();
-       
+        updateSize();  
         
         $('#555 > #all').on('click', function(){      
-          $('#555 > #all').addClass('active');
-          $('#555 > #inProg').removeClass('active');
-          $('#555 > #compTasks').removeClass('active');
-          $('#555 > #archiv').removeClass('active');
-          value = 1;
+            $('#555 > #all').addClass('active');
+            $('#555 > #inProg').removeClass('active');
+            $('#555 > #compTasks').removeClass('active');
+            $('#555 > #archiv').removeClass('active');
+            value = 1;
 
-          drawTable();   
-              
-          $("h3").text("All Tasks");
-
-          for (i = 0; i <allTasksArr.length; i++){
-              var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
-              var currStatus;
-              if (newTask.status == 1)
-                  currStatus = "In Progress";
-              else if (newTask.status == 0)
-                  currStatus = "Completed";
-              else
-                  currStatus = "Archived";
+            drawTable();   
                 
-              $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
-          }
-          updateSize();    
+            $("h3").text("All Tasks");
 
-
-var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-$('#datatable tbody').on( 'click', 'tr', function () {
-    rowINDEX = table.row(this).index();
-          } ); 
-
-var table = $('#datatable').DataTable();
- 
-$('#datatable').on( 'click', '#Delete', function () {
-       var r = confirm("Are you sure you want to delete this task?");
-       if (r==true){
-
-        allTasksArr.splice(rowINDEX,1);
-        completedTasksArr.splice(rowINDEX,1);
-        currTasksArr.splice(rowINDEX,1);
-        archivedTasksArr.splice(rowINDEX,1);
-
-    table
-        .row( $(this).parents('tr') )
-        .remove()
-        .draw(false);
-        allCount--;
-        currCount--;
-        archivedCount--;
-        completedCount--;
-      }
-
-      updateSize(); 
-        
-});    
-
-      });
+            for (i = 0; i <allTasksArr.length; i++){
+                var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
+                var currStatus;
+                if (newTask.status == 1)
+                    currStatus = "In Progress";
+                else if (newTask.status == 0)
+                    currStatus = "Completed";
+                else
+                    currStatus = "Archived";
+                  
+                $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+            }
+            updateSize();     
+            childRowMan();
+        });
 
 
         $('#555 > #inProg').on('click', function(){      
-        $('#555 > #inProg').addClass('active');
-        $('#555 > #all').removeClass('active');
-        $('#555 > #compTasks').removeClass('active');
-        $('#555 > #archiv').removeClass('active');
+                  $('#555 > #inProg').addClass('active');
+                  $('#555 > #all').removeClass('active');
+                  $('#555 > #compTasks').removeClass('active');
+                  $('#555 > #archiv').removeClass('active');
+              
+                  value = 2;  
+
+                  drawTable();    
+                
+                  $("h3").text("In Progress");
           
-        value = 2;
+                for (i = 0; i < currTasksArr.length; i++){
+                  var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
+                  var currStatus = "In Progress";
+                      
+                $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Edit" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>']).draw();
 
-        drawTable();    
-            
-        $("h3").text("In Progress");
-      
-            for (i = 0; i < currTasksArr.length; i++){
-              var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
-              var currStatus = "In Progress";
-                  
-            $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>']).draw();
-
-            }
-            updateSize();
-
-var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-$('#datatable tbody').on( 'click', 'tr', function () {
-    rowINDEX = table.row(this).index();
-          } ); 
-   
-            
-  var table = $('#datatable').DataTable();
- 
-$('#datatable').on( 'click', '#Delete', function () {
-        
-        var r = confirm("Are you sure you want to delete this task ?");
-       if (r==true){
-         
-        allTasksArr.splice(rowINDEX,1);
-        completedTasksArr.splice(rowINDEX,1);
-        currTasksArr.splice(rowINDEX,1);
-        archivedTasksArr.splice(rowINDEX,1);
-
-    table
-        .row( $(this).parents('tr') )
-        .remove()
-        .draw(false);
-        allCount--;
-        currCount--;
-        archivedCount--;
-        completedCount--;
-      } 
-      updateSize(); 
-} );    
-
-
-      });
+                }
+                updateSize(); 
+                childRowMan();
+                
+        });
 
         $('#555 > #compTasks').on('click',function(){
-        $('#555 > #compTasks').addClass('active');
-        $('#555 > #all').removeClass('active');
-        $('#555 > #inProg').removeClass('active');
-        $('#555 > #archiv').removeClass('active');
-          
-        value = 3;
+            $('#555 > #compTasks').addClass('active');
+            $('#555 > #all').removeClass('active');
+            $('#555 > #inProg').removeClass('active');
+            $('#555 > #archiv').removeClass('active');
+              
+            value = 3;
 
-        drawTable();   
-            
-        $("h3").text("Completed Tasks");
+            drawTable();   
+                
+            $("h3").text("Completed Tasks");
       
             for (i = 0; i < completedTasksArr.length; i++){
               var newTask = new task(completedTasksArr[i].name, completedTasksArr[i].description, completedTasksArr[i].status, completedTasksArr[i].date);
               var currStatus = "Completed";
-          $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
-
+            $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'</button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
             }
             updateSize();
-
- var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-$('#datatable tbody').on( 'click', 'tr', function () {
-    rowINDEX = table.row(this).index();
-          } ); 
-
-var table = $('#datatable').DataTable();
- 
-$('#datatable').on( 'click', '#Delete', function () {
-
-       var r = confirm("Are you sure you want to delete this task ?");
-       if (r==true){
-
-        allTasksArr.splice(rowINDEX,1);
-        completedTasksArr.splice(rowINDEX,1);
-        currTasksArr.splice(rowINDEX,1);
-        archivedTasksArr.splice(rowINDEX,1);
-
-    table
-        .row( $(this).parents('tr') )
-        .remove()
-        .draw(false);
-        allCount--;
-        currCount--;
-        archivedCount--;
-        completedCount--;
-      }
-      updateSize();
-        
-} );    
-
+            childRowMan();
       });
 
       $('#555 > #archiv').on('click',function(){
@@ -267,48 +384,15 @@ $('#datatable').on( 'click', '#Delete', function () {
               var newTask = new task(archivedTasksArr[i].name, archivedTasksArr[i].description, archivedTasksArr[i].status, archivedTasksArr[i].date);
               var currStatus = "Archived";
                   
-             $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+             $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button>' ]).draw();
 
                     
             }
-
-        updateSize();
-              
-              var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-$('#datatable tbody').on( 'click', 'tr', function () {
-    rowINDEX = table.row(this).index();
-          } ); 
-
-var table = $('#datatable').DataTable();
- 
-
- 
-$('#datatable').on( 'click', '#Delete', function () {
-  var r = confirm("Are you sure you want to delete this task ?");
-       if (r==true){
-
-        allTasksArr.splice(rowINDEX,1);
-        completedTasksArr.splice(rowINDEX,1);
-        currTasksArr.splice(rowINDEX,1);
-        archivedTasksArr.splice(rowINDEX,1);
-
-    table
-        .row( $(this).parents('tr') )
-        .remove()
-        .draw(false);
-        allCount--;
-        currCount--;
-        archivedCount--;
-        completedCount--;
-      }
-      updateSize();        
-} );    
-
-
+            updateSize();
+            childRowMan();    
       });
 
-     
+      $('#editDate').datepicker();
       $('#datepicker').datepicker();
       $('#newTaskButton').click(function(){
          
@@ -318,119 +402,272 @@ $('#datatable').on( 'click', '#Delete', function () {
           var taskDate = $('#datepicker').val();
           
           /// Here there should be the validations for the input by the user to ensure that he entered anything.
-          
-          // Creating and setting the new task and the arrays
-          var newTask = new task(taskName, taskDescrip, 1, taskDate);
-          allTasksArr[allCount] = newTask;
-          allCount++;
-          currTasksArr[currCount] = newTask;
-          currCount++;
-
-          // checking what the current value is
-          if (value == 1)
+          if (taskName.length == 0)
           {
-              drawTable();    
-                  
-              $("h3").text("All Tasks");
+              // freezing the modal
+              $('#newTaskButton').removeAttr("data-dismiss");
 
-              for (i = 0; i < allTasksArr.length; i++){
-                  var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
-                  var currStatus;
-                  if (newTask.status == 1)
-                      currStatus = "In Progress";
-                  else if (newTask.status == 0)
-                      currStatus = "Completed";
-                  else
-                      currStatus = "Archived";
-                    
-                 $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
-                    
-              }
-              updateSize();
-
-              var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-$('#datatable tbody').on( 'click', 'tr', function () {
-    rowINDEX = table.row(this).index();
-          }); 
-
-
-
-          }
-          else if (value == 2)
-          {
-                drawTable();    
-                    
-                $("h3").text("In Progress");
+              // Displaying error message
+              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
+              conc += '<button type="button" class="close" data-dismiss="alert">';
+              conc += '&times;';
+              conc += '</button>';
+              conc += 'Please enter a name for the task.';
+              conc += '</div>';
+              $('#alerterror').html(conc);
               
-                    for (i = 0; i < currTasksArr.length; i++){
-                      var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
-                      var currStatus = "In Progress";
+              // Closing the modal
+                  $('#myModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+              });
+          }
+          else if (taskDescrip.length == 0)
+          {
+              // freezing the modal
+              $('#newTaskButton').removeAttr("data-dismiss");
+
+              // Displaying error message
+              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
+              conc += '<button type="button" class="close" data-dismiss="alert">';
+              conc += '&times;';
+              conc += '</button>';
+              conc +='Please enter a description for the task';
+              conc += '</div>';
+              $('#alerterror').html(conc);
+              
+              // Closing the modal
+                  $('#myModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+              });
+          }
+          else if (taskName.length > 50)
+          {
+              // freezing the modal
+              $('#newTaskButton').removeAttr("data-dismiss");
+
+              // Displaying error message
+              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
+              conc += '<button type="button" class="close" data-dismiss="alert">';
+              conc += '&times;';
+              conc += '</button>';
+              conc += 'The task name can not be more than 50 characers.';
+              conc += '</div>';
+              $('#alerterror').html(conc);
+
+              // Closing the modal
+              $('#myModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+              });
+
+          }
+          else
+          { 
+                  // add dismiss attribute
+                  $('#newTaskButton').attr("data-dismiss","modal");
+
+                  // remove alert message
+                  var rem = "";
+                  $('#alerterror').html(rem);
+
+                  // Creating and setting the new task and the arrays
+                  var newTask = new task(taskName, taskDescrip, 1, taskDate);
+                  allTasksArr.push(newTask);
+                  currTasksArr.push(newTask);
+
+                  // checking what the current value is
+                  if (value == 1)
+                  {
+                      drawTable();    
                           
-                       $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
-                    }
-                    updateSize();
+                      $("h3").text("All Tasks");
 
-                     var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
-                     
-                    $('#datatable tbody').on( 'click', 'tr', function () {
-                        rowINDEX = table.row(this).index();
-                    }); 
-          }
-          else if (value == 3)
-          {
-              drawTable();    
-                  
-              $("h3").text("Completed Tasks");
-            
-                  for (i = 0; i < completedTasksArr.length; i++){
-                    var newTask = new task(completedTasksArr[i].name, completedTasksArr[i].description, completedTasksArr[i].status, completedTasksArr[i].date);
-                    var currStatus = "Completed";
-                        
-                  $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                      for (i = 0; i < allTasksArr.length; i++){
+                          var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
+                          var currStatus;
+                          if (newTask.status == 1)
+                              currStatus = "In Progress";
+                          else if (newTask.status == 0)
+                              currStatus = "Completed";
+                          else
+                              currStatus = "Archived";
+                            
+                         $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                            
+                      }
+                      updateSize();
+                      childRowMan();
+                  }
+                  else if (value == 2)
+                  {
+                        drawTable();    
+                            
+                        $("h3").text("In Progress");
+                      
+                            for (i = 0; i < currTasksArr.length; i++){
+                              var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
+                              var currStatus = "In Progress";
+                                  
+                               $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Edit" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                            }
+                            updateSize();
+                            childRowMan();
+                  }
+                  else if (value == 3)
+                  {
+                      drawTable();    
+                          
+                      $("h3").text("Completed Tasks");
+                    
+                          for (i = 0; i < completedTasksArr.length; i++){
+                            var newTask = new task(completedTasksArr[i].name, completedTasksArr[i].description, completedTasksArr[i].status, completedTasksArr[i].date);
+                            var currStatus = "Completed";
+                                
+                          $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'</button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                          }
+
+                          updateSize();
+                          childRowMan();
+                  }
+                  else if (value == 4)
+                  {
+                      drawTable();  
+                          
+                      $("h3").text("Archived");
+
+                          for (i = 0; i < archivedTasksArr.length; i++){
+                            var newTask = new task(archivedTasksArr[i].name, archivedTasksArr[i].description, archivedTasksArr[i].status, archivedTasksArr[i].date);
+                            var currStatus = "Archived";
+                                
+                          $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button>' ]).draw();
+
+                          }
+                          updateSize();
+                          childRowMan();
                   }
 
-                  updateSize();
-                  var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-                  $('#datatable tbody').on( 'click', 'tr', function () {
-                      rowINDEX = table.row(this).index();
-                  }); 
+                  // Closing the modal
+                  $('#myModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+                  });
           }
-          else if (value == 4)
-          {
-              drawTable();  
-                  
-              $("h3").text("Archived");
-
-                  for (i = 0; i < archivedTasksArr.length; i++){
-                    var newTask = new task(archivedTasksArr[i].name, archivedTasksArr[i].description, archivedTasksArr[i].status, archivedTasksArr[i].date);
-                    var currStatus = "Archived";
-                        
-                  $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
-
-                  }
-                  updateSize();
-
-                       var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
- 
-                $('#datatable tbody').on( 'click', 'tr', function () {
-                rowINDEX = table.row(this).index();
-                });   
-          }
-
-          // Closing the modal
-          $('#myModal').on('hidden.bs.modal', function () {
-            $(this).find("input,textarea,select").val('').end();
-          });
       });
 
-   
-      $('#datatable tbody').on( 'click', '#Complete', function () {
+      $('#saveChanged').click(function(){
+         
+          // Getting the values of the input
+          var taskName = $('#editName').val();
+          var taskDescrip = $('#editDescrip').val();
+          var taskDate = $('#editDate').val();
           
-      });  
-      
+          /// Here there should be the validations for the input by the user to ensure that he entered anything.
+          if (taskName.length == 0)
+          {
+              // freezing the modal
+              $('#saveChanged').removeAttr("data-dismiss");
 
+              // Displaying error message
+              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
+              conc += '<button type="button" class="close" data-dismiss="alert">';
+              conc += '&times;';
+              conc += '</button>';
+              conc += 'Please enter a name for the task.';
+              conc += '</div>';
+              $('#editAlerterror').html(conc);
+              
+              // Closing the modal
+                  $('#editModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+              });
+          }
+          else if (taskDescrip.length == 0)
+          {
+              // freezing the modal
+              $('#saveChanged').removeAttr("data-dismiss");
+
+              // Displaying error message
+              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
+              conc += '<button type="button" class="close" data-dismiss="alert">';
+              conc += '&times;';
+              conc += '</button>';
+              conc +='Please enter a description for the task';
+              conc += '</div>';
+              $('#editAlerterror').html(conc);
+              
+              // Closing the modal
+                  $('#editModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+              });
+          }
+          else if (taskName.length > 50)
+          {
+              // freezing the modal
+              $('#saveChanged').removeAttr("data-dismiss");
+
+              // Displaying error message
+              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
+              conc += '<button type="button" class="close" data-dismiss="alert">';
+              conc += '&times;';
+              conc += '</button>';
+              conc += 'The task name can not be more than 50 characers.';
+              conc += '</div>';
+              $('#editAlerterror').html(conc);
+
+              // Closing the modal
+              $('#editModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+              });
+
+          }
+          else
+          { 
+                  // add dismiss attribute
+                  $('#saveChanged').attr("data-dismiss","modal");
+
+                  // remove alert message
+                  var rem = "";
+                  $('#editAlerterror').html(rem);
+
+                  // Creating and setting the editted task and the arrays
+                  var NEWTask = new task(taskName, taskDescrip, 1, taskDate);
+                  var oldTask = currTasksArr[myGlobalIndex];
+                  var alltasksarrayindex = allTasksArr.indexOf(oldTask);
+                  allTasksArr[alltasksarrayindex] = NEWTask;
+                  currTasksArr[myGlobalIndex] = NEWTask;
+
+                  if (value == 2)
+                  {
+                            drawTable();    
+                            
+                            for (i = 0; i < currTasksArr.length; i++){
+                              var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
+                              var currStatus = "In Progress";
+                                  
+                               $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Edit" data-toggle="modal" data-target="#editModal"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                            }
+
+                            for (i = 0; i < allTasksArr.length; i++){
+                                var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
+                                var currStatus;
+                                if (newTask.status == 1)
+                                    currStatus = "In Progress";
+                                else if (newTask.status == 0)
+                                    currStatus = "Completed";
+                                else
+                                    currStatus = "Archived";
+                            
+                                $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>']);                            
+                            }
+
+                            
+                            updateSize();
+                            childRowMan();
+                  }
+                  // Closing the modal
+                  $('#editModal').on('hidden.bs.modal', function () {
+                    $(this).find("input,textarea,select").val('').end();
+                  });
+          }
+      });
 });
 </script>
 </head>
@@ -506,13 +743,13 @@ $('#datatable tbody').on( 'click', 'tr', function () {
             
             <!-- Creating the add task button and the modal to be opened when it's clicked. -->
             <a href="#" class="btn btn-primary" id="addbutton" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add Task</a><br>
+            
+            <!-- The modal for adding a new task -->
             <div class="modal" id="myModal">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <div class="alert alert-dismissible alert-danger" id="alertmessage">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    </div>
+                    <p id="alerterror"></p>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                   </div>
                   <div class="modal-body">
@@ -531,7 +768,36 @@ $('#datatable tbody').on( 'click', 'tr', function () {
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> 
-                    <button type="button" class="btn btn-primary" id="newTaskButton" data-dismiss="modal">Add Task</button>
+                    <button type="button" class="btn btn-primary" id="newTaskButton">Add Task</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal" id="editModal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <p id="editAlerterror"></p>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      
+                      <input class="form-control" id="editName" type="text">
+                    </div>
+                    <div class="form-group">
+                      
+                      <input type="text" class="form-control" id="editDescrip">
+                    </div>
+                    <div class="form-group">         
+                  <input type="text" class="form-control" id="editDate">
+                      
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> 
+                    <button type="button" class="btn btn-primary" id="saveChanged">Save changes</button>
                   </div>
                 </div>
               </div>
