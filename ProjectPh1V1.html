@@ -9,7 +9,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-  
+    <script src="js/jquery.validate.js"></script>
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
  
@@ -18,37 +18,556 @@
  
     <!--Mobile compatibility-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
- 
+    
+    <!-- Adding datatables libraries -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+
+    <!-- Incldung the css file -->
     <link rel="stylesheet" type="text/css" href="ProjectUbuntu.css">
-
+    
 <!-- jQuery Scriptting -->
-<script>                                   
-$("ProjectPh1V1").ready(function() {
+<script>      
+     
+function task(name, description, status, date)
+{
+  this.name = name;
+  this.description = description;
+  this.status = status;
+  this.date = date;
+}
+var allTasksArr = [];
+var currTasksArr = [];
+var completedTasksArr = [];
+var archivedTasksArr = [];
+var allCount = 0;
+var currCount = 0;
+var completedCount = 0;
+var archivedCount = 0;
+var value;
+var rowINDEX;
 
-    /// This function adjusts the problem of filling the squares on clicking for the icons on the left of the page and displays the choice of the user.
-     var selector = '.nav li';        // Here i want to select with the id not the class, it doesn't work for some reason...
-     $(selector).on('click', function(){      
-        $(selector).removeClass('active');
-        $(this).addClass('active');
-        var value = '#555';
-        value = $(this).val();
-        if (value == 1)
-        {
-            $("h3").text("All Tasks");
-            // Going to add displaying all the tasks here, same with the other if else branches.
-        }     
-        else if (value == 2)
-           $("h3").text("In Progress");
-        else if (value == 3)
-           $("h3").text("Completed Tasks");
-        else if (value == 4)
-           $("h3").text("Archived");  
+$("ProjectPh1V1").ready(function(){
+        $('#allsize').text(allTasksArr.length); 
+              $('#currsize').text(currTasksArr.length);
+              $('#completedsize').text(completedTasksArr.length);
+              $('#archivedsize').text(archivedTasksArr.length);
+        
+        $('#555 > #all').on('click', function(){      
+          $('#555 > #all').addClass('active');
+          $('#555 > #inProg').removeClass('active');
+          $('#555 > #compTasks').removeClass('active');
+          $('#555 > #archiv').removeClass('active');
+          value = 1;
+
+          /// Constructing the table layout             
+          var concat = '<table id="datatable" class="table table-striped table-hover">';
+          concat += '<thead>';
+          concat += '<tr>';
+          concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+          concat += '<th>Name</th>';
+          concat += '<th>Description</th>';
+          concat += '<th>Status</th>';
+          concat += '<th>Due Date</th>';
+          concat += '<th>Options</th>';
+          concat += '</tr>';
+          concat += '</thead>';
+          concat += '</table>';
+          $('#here').html(concat);
+              
+          $('#datatable').DataTable();    
+              
+          $("h3").text("All Tasks");
+
+          for (i = 0; i <allTasksArr.length; i++){
+              var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
+              var currStatus;
+              if (newTask.status == 1)
+                  currStatus = "In Progress";
+              else if (newTask.status == 0)
+                  currStatus = "Completed";
+              else
+                  currStatus = "Archived";
+                
+              $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+          }
+         $('#allsize').text(allTasksArr.length); 
+              $('#currsize').text(currTasksArr.length);
+              $('#completedsize').text(completedTasksArr.length);
+              $('#archivedsize').text(archivedTasksArr.length);    
+
+
+var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          } ); 
+
+var table = $('#datatable').DataTable();
+ 
+$('#datatable').on( 'click', '#Delete', function () {
+       var r = confirm("Are you sure you want to delete this task?");
+       if (r==true){
+
+        allTasksArr.splice(rowINDEX,1);
+        completedTasksArr.splice(rowINDEX,1);
+        currTasksArr.splice(rowINDEX,1);
+        archivedTasksArr.splice(rowINDEX,1);
+
+    table
+        .row( $(this).parents('tr') )
+        .remove()
+        .draw(false);
+        allCount--;
+        currCount--;
+        archivedCount--;
+        completedCount--;
+      }
+
+      $('#allsize').text(allTasksArr.length); 
+      $('#currsize').text(currTasksArr.length);
+      $('#completedsize').text(completedTasksArr.length);
+      $('#archivedsize').text(archivedTasksArr.length); 
+        
+});    
+
       });
 
+
+        $('#555 > #inProg').on('click', function(){      
+        $('#555 > #inProg').addClass('active');
+        $('#555 > #all').removeClass('active');
+        $('#555 > #compTasks').removeClass('active');
+        $('#555 > #archiv').removeClass('active');
+          
+        value = 2;
+
+        /// Constructing the table layout             
+        var concat = '<table id="datatable" class="table table-striped table-hover">';
+        concat += '<thead>';
+        concat += '<tr>';
+        concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+        concat += '<th>Name</th>';
+        concat += '<th>Description</th>';
+        concat += '<th>Status</th>';
+        concat += '<th>Due Date</th>';
+        concat += '<th>Options</th>';
+        concat += '</tr>';
+        concat += '</thead>';
+        concat += '</table>';
+        $('#here').html(concat);
+            
+        $('#datatable').DataTable();    
+            
+        $("h3").text("In Progress");
+      
+            for (i = 0; i < currTasksArr.length; i++){
+              var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
+              var currStatus = "In Progress";
+                  
+            $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>']).draw();
+
+            }
+           $('#allsize').text(allTasksArr.length); 
+              $('#currsize').text(currTasksArr.length);
+              $('#completedsize').text(completedTasksArr.length);
+              $('#archivedsize').text(archivedTasksArr.length);
+
+var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          } ); 
+   
+            
+  var table = $('#datatable').DataTable();
+ 
+$('#datatable').on( 'click', '#Delete', function () {
+        
+        var r = confirm("Are you sure you want to delete this task ?");
+       if (r==true){
+         
+        allTasksArr.splice(rowINDEX,1);
+        completedTasksArr.splice(rowINDEX,1);
+        currTasksArr.splice(rowINDEX,1);
+        archivedTasksArr.splice(rowINDEX,1);
+
+    table
+        .row( $(this).parents('tr') )
+        .remove()
+        .draw(false);
+        allCount--;
+        currCount--;
+        archivedCount--;
+        completedCount--;
+      }
+      
+      $('#allsize').text(allTasksArr.length); 
+      $('#currsize').text(currTasksArr.length);
+      $('#completedsize').text(completedTasksArr.length);
+      $('#archivedsize').text(archivedTasksArr.length); 
+} );    
+
+
+      });
+
+        $('#555 > #compTasks').on('click',function(){
+        $('#555 > #compTasks').addClass('active');
+        $('#555 > #all').removeClass('active');
+        $('#555 > #inProg').removeClass('active');
+        $('#555 > #archiv').removeClass('active');
+          
+        value = 3;
+
+        /// Constructing the table layout             
+        var concat = '<table id="datatable" class="table table-striped table-hover">';
+        concat += '<thead>';
+        concat += '<tr>';
+        concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+        concat += '<th>Name</th>';
+        concat += '<th>Description</th>';
+        concat += '<th>Status</th>';
+        concat += '<th>Due Date</th>';
+        concat += '<th>Options</th>';
+        concat += '</tr>';
+        concat += '</thead>';
+        concat += '</table>';
+        $('#here').html(concat);
+            
+        $('#datatable').DataTable();    
+            
+        $("h3").text("Completed Tasks");
+      
+            for (i = 0; i < completedTasksArr.length; i++){
+              var newTask = new task(completedTasksArr[i].name, completedTasksArr[i].description, completedTasksArr[i].status, completedTasksArr[i].date);
+              var currStatus = "Completed";
+          $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+
+            }
+            $('#allsize').text(allTasksArr.length); 
+              $('#currsize').text(currTasksArr.length);
+              $('#completedsize').text(completedTasksArr.length);
+              $('#archivedsize').text(archivedTasksArr.length);
+
+ var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          } ); 
+
+var table = $('#datatable').DataTable();
+ 
+$('#datatable').on( 'click', '#Delete', function () {
+
+       var r = confirm("Are you sure you want to delete this task ?");
+       if (r==true){
+
+        allTasksArr.splice(rowINDEX,1);
+        completedTasksArr.splice(rowINDEX,1);
+        currTasksArr.splice(rowINDEX,1);
+        archivedTasksArr.splice(rowINDEX,1);
+
+    table
+        .row( $(this).parents('tr') )
+        .remove()
+        .draw(false);
+        allCount--;
+        currCount--;
+        archivedCount--;
+        completedCount--;
+      }
+      $('#allsize').text(allTasksArr.length); 
+      $('#currsize').text(currTasksArr.length);
+      $('#completedsize').text(completedTasksArr.length);
+      $('#archivedsize').text(archivedTasksArr.length); 
+        
+} );    
+
+      });
+
+      $('#555 > #archiv').on('click',function(){
+        $('#555 > #archiv').addClass('active');
+        $('#555 > #all').removeClass('active');
+        $('#555 > #inProg').removeClass('active');
+        $('#555 > #compTasks').removeClass('active');
+          
+        value = 4;
+
+        /// Constructing the table layout             
+        var concat = '<table id="datatable" class="table table-striped table-hover">';
+        concat += '<thead>';
+        concat += '<tr>';
+        concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+        concat += '<th>Name</th>';
+        concat += '<th>Description</th>';
+        concat += '<th>Status</th>';
+        concat += '<th>Due Date</th>';
+        concat += '<th>Options</th>';
+        concat += '</tr>';
+        concat += '</thead>';
+        concat += '</table>';
+        $('#here').html(concat);
+            
+        $('#datatable').DataTable();    
+            
+        $("h3").text("Archived");
+
+            for (i = 0; i < archivedTasksArr.length; i++){
+              var newTask = new task(archivedTasksArr[i].name, archivedTasksArr[i].description, archivedTasksArr[i].status, archivedTasksArr[i].date);
+              var currStatus = "Archived";
+                  
+             $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+
+                    
+            }
+
+        $('#allsize').text(allTasksArr.length); 
+        $('#currsize').text(currTasksArr.length);
+        $('#completedsize').text(completedTasksArr.length);
+        $('#archivedsize').text(archivedTasksArr.length);
+              
+              var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          } ); 
+
+var table = $('#datatable').DataTable();
+ 
+
+ 
+$('#datatable').on( 'click', '#Delete', function () {
+  var r = confirm("Are you sure you want to delete this task ?");
+       if (r==true){
+
+        allTasksArr.splice(rowINDEX,1);
+        completedTasksArr.splice(rowINDEX,1);
+        currTasksArr.splice(rowINDEX,1);
+        archivedTasksArr.splice(rowINDEX,1);
+
+    table
+        .row( $(this).parents('tr') )
+        .remove()
+        .draw(false);
+        allCount--;
+        currCount--;
+        archivedCount--;
+        completedCount--;
+      }
+      $('#allsize').text(allTasksArr.length); 
+      $('#currsize').text(currTasksArr.length);
+      $('#completedsize').text(completedTasksArr.length);
+      $('#archivedsize').text(archivedTasksArr.length); 
+        
+} );    
+
+
+      });
+
+     
       $('#datepicker').datepicker();
+      $('#newTaskButton').click(function(){
+         
+          // Getting the values of the input
+          var taskName = $('#focusedInput').val();
+          var taskDescrip = $('#inputDefault').val();
+          var taskDate = $('#datepicker').val();
+          
+          /// Here there should be the validations for the input by the user to ensure that he entered anything.
+          
+          // Creating and setting the new task and the arrays
+          var newTask = new task(taskName, taskDescrip, 1, taskDate);
+          allTasksArr[allCount] = newTask;
+          allCount++;
+          currTasksArr[currCount] = newTask;
+          currCount++;
+
+          // checking what the current value is
+          if (value == 1)
+          {
+                /// Constructing the table layout             
+              var concat = '<table id="datatable" class="table table-striped table-hover">';
+              concat += '<thead>';
+              concat += '<tr>';
+              concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+              concat += '<th>Name</th>';
+              concat += '<th>Description</th>';
+              concat += '<th>Status</th>';
+              concat += '<th>Due Date</th>';
+              concat += '<th>Options</th>';
+              concat += '</tr>';
+              concat += '</thead>';
+              concat += '</table>';
+              $('#here').html(concat);
+                  
+              $('#datatable').DataTable();    
+                  
+              $("h3").text("All Tasks");
+
+              for (i = 0; i < allTasksArr.length; i++){
+                  var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
+                  var currStatus;
+                  if (newTask.status == 1)
+                      currStatus = "In Progress";
+                  else if (newTask.status == 0)
+                      currStatus = "Completed";
+                  else
+                      currStatus = "Archived";
+                    
+                 $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                    
+              }
+              $('#allsize').text(allTasksArr.length); 
+              $('#currsize').text(currTasksArr.length);
+              $('#completedsize').text(completedTasksArr.length);
+              $('#archivedsize').text(archivedTasksArr.length);
+
+              var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          }); 
+
+
+
+          }
+          else if (value == 2)
+          {
+                /// Constructing the table layout             
+                var concat = '<table id="datatable" class="table table-striped table-hover">';
+                concat += '<thead>';
+                concat += '<tr>';
+                concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+                concat += '<th>Name</th>';
+                concat += '<th>Description</th>';
+                concat += '<th>Status</th>';
+                concat += '<th>Due Date</th>';
+                concat += '<th>Options</th>';
+                concat += '</tr>';
+                concat += '</thead>';
+                concat += '</table>';
+                $('#here').html(concat);
+                    
+                $('#datatable').DataTable();    
+                    
+                $("h3").text("In Progress");
+              
+                    for (i = 0; i < currTasksArr.length; i++){
+                      var newTask = new task(currTasksArr[i].name, currTasksArr[i].description, currTasksArr[i].status, currTasksArr[i].date);
+                      var currStatus = "In Progress";
+                          
+                       $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                    }
+                    $('#allsize').text(allTasksArr.length); 
+                  $('#currsize').text(currTasksArr.length);
+                  $('#completedsize').text(completedTasksArr.length);
+                  $('#archivedsize').text(archivedTasksArr.length);
+
+ var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          } ); 
+
+  
+
+
+          }
+          else if (value == 3)
+          {
+              /// Constructing the table layout             
+              var concat = '<table id="datatable" class="table table-striped table-hover">';
+              concat += '<thead>';
+              concat += '<tr>';
+              concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+              concat += '<th>Name</th>';
+              concat += '<th>Description</th>';
+              concat += '<th>Status</th>';
+              concat += '<th>Due Date</th>';
+              concat += '<th>Options</th>';
+              concat += '</tr>';
+              concat += '</thead>';
+              concat += '</table>';
+              $('#here').html(concat);
+                  
+              $('#datatable').DataTable();    
+                  
+              $("h3").text("Completed Tasks");
+            
+                  for (i = 0; i < completedTasksArr.length; i++){
+                    var newTask = new task(completedTasksArr[i].name, completedTasksArr[i].description, completedTasksArr[i].status, completedTasksArr[i].date);
+                    var currStatus = "Completed";
+                        
+                  $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                  }
+
+                  $('#allsize').text(allTasksArr.length); 
+                  $('#currsize').text(currTasksArr.length);
+                  $('#completedsize').text(completedTasksArr.length);
+                  $('#archivedsize').text(archivedTasksArr.length);
+                  var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+$('#datatable tbody').on( 'click', 'tr', function () {
+    rowINDEX = table.row(this).index();
+          } ); 
+
+
+
+
+          }
+          else if (value == 4)
+          {
+              /// Constructing the table layout             
+              var concat = '<table id="datatable" class="table table-striped table-hover">';
+              concat += '<thead>';
+              concat += '<tr>';
+              concat += '<th width="100px"><input name="select_all" value="1" id="select-all-checkbox" type="checkbox" /></th>';
+              concat += '<th>Name</th>';
+              concat += '<th>Description</th>';
+              concat += '<th>Status</th>';
+              concat += '<th>Due Date</th>';
+              concat += '<th>Options</th>';
+              concat += '</tr>';
+              concat += '</thead>';
+              concat += '</table>';
+              $('#here').html(concat);
+                  
+              $('#datatable').DataTable();    
+                  
+              $("h3").text("Archived");
+
+                  for (i = 0; i < archivedTasksArr.length; i++){
+                    var newTask = new task(archivedTasksArr[i].name, archivedTasksArr[i].description, archivedTasksArr[i].status, archivedTasksArr[i].date);
+                    var currStatus = "Archived";
+                        
+                  $('#datatable').DataTable().row.add(['<input type="checkbox">', newTask.name, newTask.description, currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-pencil"></span></button><button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+
+                  }
+                  $('#allsize').text(allTasksArr.length); 
+                  $('#currsize').text(currTasksArr.length);
+                  $('#completedsize').text(completedTasksArr.length);
+                  $('#archivedsize').text(archivedTasksArr.length);
+
+                       var table = $('#datatable').DataTable();   ///checking the index of the row in the datatable as well as that for the array 
+ 
+                $('#datatable tbody').on( 'click', 'tr', function () {
+                rowINDEX = table.row(this).index();
+                });   
+          }
+
+          // Closing the modal
+          $('#myModal').on('hidden.bs.modal', function () {
+            $(this).find("input,textarea,select").val('').end();
+          });
+      });
+
+   
+      $('#datatable tbody').on( 'click', '#Complete', function () {
+          
+      });  
+      
 
 });
-
 </script>
 </head>
  
@@ -69,7 +588,7 @@ $("ProjectPh1V1").ready(function() {
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> Dropdown <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="#">Action</a></li>
             <li><a href="#">Another action</a></li>
@@ -84,7 +603,7 @@ $("ProjectPh1V1").ready(function() {
       <ul class="nav navbar-nav navbar-right">
       <li class="dropdown">
       
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-user"></span> Mohamed Tolba<span class="caret"></span> </a>
+        <a href="#" id="test" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-user"></span> Mohamed Tolba<span class="caret"></span> </a>
         <ul class="dropdown-menu" role="menu">
         <li><a href="#">Profile</a></li>
             <li><a href="#">Settings</a></li>
@@ -107,47 +626,53 @@ $("ProjectPh1V1").ready(function() {
         <div class="col-sm-2 sidenav" id="leftmenu">
             <ul class="nav nav-pills nav-stacked" id="555">
                  
-                <li value=1><a href="#section1" >All Tasks</a></li>
-                <li value=2><a href="#section2" >In Progress</a></li>
-                <li value=3><a href="#section3">Completed Tasks</a></li>
-                <li value=4><a href="#section4">Archived</a></li>
-                <li value=5><a href="#section5"><span class="glyphicon glyphicon-plus"></span> Create list</a></li>
+                <li id="all" value=1 class="active"><a href="#section1">All Tasks<span class="badge" id="allsize"></span></a></li>
+                <li id="inProg" value=2><a href="#section2" >In Progress<span class="badge" id="currsize"></span></a></li>
+                <li id="compTasks" value=3><a href="#section3">Completed Tasks<span class="badge" id="completedsize"></span></a></li>
+                <li id="archiv" value=4><a href="#section4">Archived<span class="badge" id="archivedsize"></a></li>
             </ul><br>
         </div>
 
         <div class="col-sm-10">
-            <h3></h3>
+            <h3>All Tasks</h3>
             <hr>
+            
+            <!-- Creating the table here and adding elements to it whenever a new task is created. -->
+            <p id="here"></p>
+            
             <!-- Creating the add task button and the modal to be opened when it's clicked. -->
             <a href="#" class="btn btn-primary" id="addbutton" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add Task</a><br>
             <div class="modal" id="myModal">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
+                    <div class="alert alert-dismissible alert-danger" id="alertmessage">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
-                      <label class="control-label" for="focusedInput">Task Name</label>
-                      <input class="form-control" id="focusedInput" type="text">
+                      
+                      <input class="form-control" id="focusedInput" type="text" placeholder="Task Name">
                     </div>
                     <div class="form-group">
-                      <label class="control-label" for="inputDefault">Task Description</label>
-                      <input type="text" class="form-control" id="inputDefault">
+                      
+                      <input type="text" class="form-control" id="inputDefault" placeholder="Task Description">
                     </div>
-                    <div class="form-group">
-                      <label class="control-label" for="inputDefault">Task Due Date</label>
-                      <input type="text" class="form-control" id="datepicker">
+                    <div class="form-group">         
+                  <input type="text" class="form-control" id="datepicker" placeholder="Task due date(optional)">
+                      
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <!--When the user presses cancel, we need to make sure that all fields are cleared-->
-                    <button type="button" class="btn btn-primary">Add Task</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> 
+                    <button type="button" class="btn btn-primary" id="newTaskButton" data-dismiss="modal">Add Task</button>
                   </div>
                 </div>
               </div>
             </div>
-        </div>
+        
     </div>
   </div>
  
