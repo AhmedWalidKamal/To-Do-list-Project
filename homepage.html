@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>ToDoList - Homepage</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/agency.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/agency.js"></script>
+
+    <!--JQuery Scriptting -->
+    <script>
+
+    	// Email validation funciton
+    	function validateEmail(email) {
+    		// using regular expression.
+   			 if (email.length > 0)
+   			 {
+   			 	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    			return re.test(email);
+			 }
+			 else
+			 	return false;
+		} 
+
+		// Password validation function
+		function validatePassword(pass) {
+			if (pass.length < 5)
+				return false;
+			else
+				return true;
+		}
+
+		// Username validation function
+		function validateUsername(name) {
+			if (name.length > 0)
+				return /^[a-zA-Z]*$/.test(name);
+			else
+				return false;
+		}
+
+
+		// HERE THERE SHOULD BE THE PASSWORD AND USERNAME VALIDATION FUNCTIONS.
+
+    	$("homepage").ready(function(){
+
+    		// When trying to sign up
+    		$('#newAcc').click(function(){
+    			/// NOTE: ALL ALERTS ARE TO BE REPLACED WITH PROPER ERROR MESSAGES
+
+    			var F = 1;
+
+    			// Removing data dismiss attribute until checking
+    			$('#newAcc').removeAttr("data-dismiss");
+
+    			// Email validation, NOTE: NO TWO USERS CAN HAVE THE SAME EMAIL, THATS A CHECK FOR THE BACK END.
+    			if (validateEmail($('#registerEmail').val()))
+    			{
+    				alert("Correct Email for registering");
+    			}	
+    			else
+    			{
+    				F = 0;
+    				alert("Incorrect Email for registering");
+    			}	
+    			
+    			// Password validation
+    			if (validatePassword($('#registerPass').val()))
+    			{
+    				alert("Correct password for registering");
+    			}	
+    			else
+    			{
+    				F = 0;
+    				alert("Incorrect password for registering");
+    			}
+
+    			// Username Validation
+    			if (validateUsername($('#username').val()))
+    			{
+    				alert("Username cool");
+    			}
+    			else
+    			{
+    				F = 0;
+    				alert("Username shit");
+    			}
+
+    			if (F != 0)
+    				$('#newAcc').attr("data-dismiss", "modal");
+    			
+    			
+    		});
+
+    		// When trying to log in
+    		$('#logIn').click(function(){
+
+    			// Removing the linkage to the next page to check the input first.
+    			$('#logIn').removeAttr("href");
+    			
+    			// Flag for the status of the input
+    			var F = 1;
+    			
+    			// Email validation
+    			if (validateEmail($('#loginEmail').val()))
+    			{
+    				// Here should be checking if this user has registered or not before logging in. (BACK END)
+    				
+    				alert("Correct Email for logging in");
+    			}
+    			else
+    			{
+    				F = 0;
+    				alert("Incorrect Email for logging in");
+    			}
+
+    			// Password validation
+    			if (validatePassword($('#loginPass').val()))
+    			{
+    				// Here should be checking if this user has registered or not before logging in. (BACK END)
+    				
+    				alert("Correct password for logging in");
+    				    			}
+    			else
+    			{
+    				F = 0;
+    				alert("Incorrect password for logging in");
+    			}
+
+    			// If all inputs are valid, go to the tasks page.
+    			if (F != 0)
+    				$('#logIn').attr("href", "ProjectPh1V1.html");
+    		});
+
+    		// Clearing data when register modal is not open
+    		$('#registerModal').on('hidden.bs.modal', function () {
+                $(this).find("input,textarea,select").val('').end();
+            });
+
+    		// Clearing data when log in modal is not open
+            $('#loginModal').on('hidden.bs.modal', function () {
+                $(this).find("input,textarea,select").val('').end();
+            });
+    	});
+
+    </script>
+
+</head>
+
+<body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">ToDoList</a>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in">Welcome To ToDoList!</div>
+                <div class="intro-heading">Keep your mind organized</div>
+                <a class="page-scroll btn btn-xl" data-toggle="modal" data-target="#registerModal">Sign up</a>
+                <a class="page-scroll btn btn-xl" data-toggle="modal" data-target="#loginModal">Log In</a>
+            </div>
+        </div>
+    </header>
+
+   <!-- The modal is for Registration -->
+    <div class="modal" id="registerModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <p id="alerterror1"></p>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+            <div class="modal-body">
+                <div class="form-group">      
+                  <h6>Username</h6>
+                  <input class="form-control" id="username" type="text">
+                </div>
+              <div class="form-group">     
+                <h6>Email</h6>
+                <input type="text" class="form-control" id="registerEmail">
+              </div>
+              <div class="form-group">         
+                <h6>Password</h6>
+                <input type="password" class="form-control" id="registerPass">     
+              </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> 
+                <!-- Here also the data dismiss attribute should be erased and added using jquery only when the input is validated. -->
+                <button type="button" class="btn btn-primary" id="newAcc">Create Account</button> 
+            </div>    
+            </div>
+        </div>
+    </div>
+    
+    <!-- The modal is for Logging in -->
+    <div class="modal" id="loginModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <p id="alerterror2"></p>
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+            <div class="modal-body">
+              <div class="form-group">     
+                <h6>Email</h6>
+                <input type="text" class="form-control" id="loginEmail">
+              </div>
+              <div class="form-group">         
+                <h6>Password</h6>
+                <input type="password" class="form-control" id="loginPass">     
+              </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <!-- Here jquery should be used to add the attribute href and link to the other html file only after validating the input, not hard-coded like this. --> 
+                <a class="btn btn-primary" id="logIn">Log In</a> 
+            </div>    
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="copyright">Copyright &copy; ToDoList 2016</span>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-inline social-buttons">
+                        <li><a href="#"><i class="fa fa-twitter"></i></a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-facebook"></i></a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-linkedin"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
