@@ -48,144 +48,6 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="js/agency.js"></script>
-
-    <!--JQuery Scriptting -->
-    <script>
-
-    	// Email validation funciton
-    	function validateEmail(email) {
-    		// using regular expression.
-   			 if (email.length > 0)
-   			 {
-   			 	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    			return re.test(email);
-			 }
-			 else
-			 	return false;
-		} 
-
-		// Password validation function
-		function validatePassword(pass) {
-			if (pass.length < 5)
-				return false;
-			else
-				return true;
-		}
-
-		// Username validation function
-		function validateUsername(name) {
-			if (name.length > 0)
-				return /^[a-zA-Z]*$/.test(name);
-			else
-				return false;
-		}
-
-
-		// HERE THERE SHOULD BE THE PASSWORD AND USERNAME VALIDATION FUNCTIONS.
-
-    	$("homepage").ready(function(){
-
-    		// When trying to sign up
-    		$('#newAcc').click(function(){
-    			/// NOTE: ALL ALERTS ARE TO BE REPLACED WITH PROPER ERROR MESSAGES
-
-    			var F = 1;
-
-    			// Removing data dismiss attribute until checking
-    			$('#newAcc').removeAttr("data-dismiss");
-
-    			// Email validation, NOTE: NO TWO USERS CAN HAVE THE SAME EMAIL, THATS A CHECK FOR THE BACK END.
-    			if (validateEmail($('#registerEmail').val()))
-    			{
-    				alert("Correct Email for registering");
-    			}	
-    			else
-    			{
-    				F = 0;
-    				alert("Incorrect Email for registering");
-    			}	
-    			
-    			// Password validation
-    			if (validatePassword($('#registerPass').val()))
-    			{
-    				alert("Correct password for registering");
-    			}	
-    			else
-    			{
-    				F = 0;
-    				alert("Incorrect password for registering");
-    			}
-
-    			// Username Validation
-    			if (validateUsername($('#username').val()))
-    			{
-    				alert("Username cool");
-    			}
-    			else
-    			{
-    				F = 0;
-    				alert("Username shit");
-    			}
-
-    			if (F != 0)
-    				$('#newAcc').attr("data-dismiss", "modal");
-    			
-    			
-    		});
-
-    		// When trying to log in
-    		$('#logIn').click(function(){
-
-    			// Removing the linkage to the next page to check the input first.
-    			$('#logIn').removeAttr("href");
-    			
-    			// Flag for the status of the input
-    			var F = 1;
-    			
-    			// Email validation
-    			if (validateEmail($('#loginEmail').val()))
-    			{
-    				// Here should be checking if this user has registered or not before logging in. (BACK END)
-    				
-    				alert("Correct Email for logging in");
-    			}
-    			else
-    			{
-    				F = 0;
-    				alert("Incorrect Email for logging in");
-    			}
-
-    			// Password validation
-    			if (validatePassword($('#loginPass').val()))
-    			{
-    				// Here should be checking if this user has registered or not before logging in. (BACK END)
-    				
-    				alert("Correct password for logging in");
-    				    			}
-    			else
-    			{
-    				F = 0;
-    				alert("Incorrect password for logging in");
-    			}
-
-    			// If all inputs are valid, go to the tasks page.
-    			if (F != 0)
-    				$('#logIn').attr("href", "ProjectPh1V1.html");
-    		});
-
-    		// Clearing data when register modal is not open
-    		$('#registerModal').on('hidden.bs.modal', function () {
-                $(this).find("input,textarea,select").val('').end();
-            });
-
-    		// Clearing data when log in modal is not open
-            $('#loginModal').on('hidden.bs.modal', function () {
-                $(this).find("input,textarea,select").val('').end();
-            });
-    	});
-
-    </script>
-
 </head>
 
 <body id="page-top" class="index">
@@ -214,71 +76,83 @@
             <div class="intro-text">
                 <div class="intro-lead-in">Welcome To ToDoList!</div>
                 <div class="intro-heading">Keep your mind organized</div>
-                <a class="page-scroll btn btn-xl" data-toggle="modal" data-target="#registerModal">Sign up</a>
-                <a class="page-scroll btn btn-xl" data-toggle="modal" data-target="#loginModal">Log In</a>
+                <a class="page-scroll btn btn-xl" href="#Register">Sign up</a>
+                <a class="page-scroll btn btn-xl" href="#Login">Log In</a>
             </div>
         </div>
     </header>
 
-   <!-- The modal is for Registration -->
-    <div class="modal" id="registerModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                  <p id="alerterror1"></p>
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <!-- Register Section -->
+    <section id="Register">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Registration Form</h2>
                 </div>
-            <div class="modal-body">
-                <div class="form-group">      
-                  <h6>Username</h6>
-                  <input class="form-control" id="username" type="text">
-                </div>
-              <div class="form-group">     
-                <h6>Email</h6>
-                <input type="text" class="form-control" id="registerEmail">
-              </div>
-              <div class="form-group">         
-                <h6>Password</h6>
-                <input type="password" class="form-control" id="registerPass">     
-              </div>
             </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> 
-                <!-- Here also the data dismiss attribute should be erased and added using jquery only when the input is validated. -->
-                <button type="button" class="btn btn-primary" id="newAcc">Create Account</button> 
-            </div>    
+            <div class="row">
+                <div class="col-lg-12">
+                    <form name="sentMessage" id="contactForm" action="http://127.0.0.1:8081/register" method="POST">
+                        <div class="row">
+                            <div class="col-lg-12 text-center">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Your Username*" name="name" id="myname" required data-validation-required-message="Please enter your username.">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" placeholder="Your Email *" name = "email" id="myEmail" required data-validation-required-message="Please enter your email address.">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="Your Password *" name="password" id="myPassword" required data-validation-required-message="Please enter your password.">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-lg-12 text-center">
+                                <div id="success"></div>
+                                <button type="submit" class="btn btn-xl">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- The modal is for Logging in -->
-    <div class="modal" id="loginModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                  <p id="alerterror2"></p>
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    </section>
+
+    <!-- Login Section -->
+    <section id="Login">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Login Form</h2>
                 </div>
-            <div class="modal-body">
-              <div class="form-group">     
-                <h6>Email</h6>
-                <input type="text" class="form-control" id="loginEmail">
-              </div>
-              <div class="form-group">         
-                <h6>Password</h6>
-                <input type="password" class="form-control" id="loginPass">     
-              </div>
             </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <!-- Here jquery should be used to add the attribute href and link to the other html file only after validating the input, not hard-coded like this. --> 
-                <a class="btn btn-primary" id="logIn">Log In</a> 
-            </div>    
+            <div class="row">
+                <div class="col-lg-12">
+                    <form name="sentMessage" id="contactForm" action="http://127.0.0.1:8081/login" method="POST">
+                        <div class="row">
+                            <div class="col-lg-12 text-center">
+                                <div class="form-group">
+                                    <input type="email" class="form-control" placeholder="Your Email *" name = "email" id="myEmail" required data-validation-required-message="Please enter your email address.">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="Your Password *" name="password" id="myPassword" required data-validation-required-message="Please enter your password.">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-lg-12 text-center">
+                                <div id="success"></div>
+                                <button type="submit" class="btn btn-xl">Log In</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <footer>
         <div class="container">

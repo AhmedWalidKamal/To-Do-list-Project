@@ -9,7 +9,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script src="js/jquery.validate.js"></script>
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
  
@@ -24,7 +23,7 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
 
     <!-- Incldung the css file -->
-    <link rel="stylesheet" type="text/css" href="ProjectUbuntu.css">
+    <link rel="stylesheet" type="text/css" href="http://bootswatch.com/cosmo/bootstrap.min.css">
     
 <!-- jQuery Scriptting -->
 <script>      
@@ -54,153 +53,38 @@ var FdateAll = 1;
 var FdateProg = 1;
 var FdateComp = 1;
 var FdateArchiv = 1;
+var FirstLoadStop = 0;
 
- function SortByName1(a, b){
-  var aName = a.name.toLowerCase();
-  var bName = b.name.toLowerCase(); 
-  return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+function sendArrays() {
+ var arrays = {
+  'allTasksArray[]' : allTasksArr,
+  'inProgressArray[]': currTasksArr,
+  'completedArray[]': completedTasksArr,
+  'archivedArray[]': archivedTasksArr
+ }
+   $.ajax({
+    url: "http://127.0.0.1:8081/array",
+    type: "POST",
+    dataType: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify(arrays)
+   });
 }
-function SortByDate1(a,b){
-  var aDate = new Date(a.date).getTime();
-  var bDate = new Date(b.date).getTime();
-  return ((aDate < bDate) ? -1 : ((aDate > bDate) ? 1 : 0));
-}
 
-function sortByname()
-{
-     $('#datatable thead').on('click','#SortByName',function()  ///this way sorts the arrays in ascending order
-     {
-      
-        if (value==1) ///Ascending N Descending order
-        {
-          if (FnameAll==1){
-          allTasksArr.sort(SortByName1);
-          FnameAll*=-1;
-          
-          } 
-          else if (FnameAll==-1)
-          {
-            allTasksArr.sort(SortByName1);
-            allTasksArr.reverse();
-            FnameAll*=-1;
-            
-          }
-        }
-        else if (value==2)
-        {
-          if (FnameProg==1){
-
-          currTasksArr.sort(SortByName1);
-          FnameProg*=-1;
-          
-          } 
-          else if (FnameProg==-1)
-          {
-            currTasksArr.sort(SortByName1);
-            currTasksArr.reverse();
-            FnameProg*=-1;
-            
-          }
-        }
-        else if (value==3)
-         {
-          if (FnameComp==1){
-          completedTasksArr.sort(SortByName1);
-          FnameComp*=-1;
-          
-          }
-          else if (FnameComp==-1){
-            completedTasksArr.sort(SortByName1);
-            completedTasksArr.reverse();
-            FnameComp*=-1;
-          
-          }
-        }
-        else if (value==4)
-        {
-          if (FnameArchiv==1){
-          archivedTasksArr.sort(SortByName1);
-          FnameArchiv*=-1;
-          
-        }
-        else if (FnameArchiv==-1){
-            archivedTasksArr.sort(SortByName1);
-            archivedTasksArr.reverse();
-            FnameArchiv*=-1;
-            
-        }
-      }
-     
-     });
-}
-function sortBydate()
-{
-     
-
-    $('#datatable thead').on('click','#SortByDate',function()  ///this way sorts the arrays in ascending order
-     {
-      
-        if (value==1) ///Ascending N Descending order
-        {
-          if (FdateAll==1){
-          allTasksArr.sort(SortByDate1);
-          FdateAll*=-1;
-          
-          } 
-          else if (FdateAll==-1)
-          {
-            allTasksArr.sort(SortByDate1);
-            allTasksArr.reverse();
-            FdateAll*=-1;
-            
-          }
-        }
-        else if (value==2)
-        {
-          if (FdateProg==1){
-
-          currTasksArr.sort(SortByDate1);
-          FdateProg*=-1;
-          
-          } 
-          else if (FdateProg==-1)
-          {
-            currTasksArr.sort(SortByDate1);
-            currTasksArr.reverse();
-            FdateProg*=-1;
-            
-          }
-        }
-        else if (value==3)
-         {
-          if (FdateComp==1){
-          completedTasksArr.sort(SortByDate1);
-          FdateComp*=-1;
-          
-          }
-          else if (FdateComp==-1){
-            completedTasksArr.sort(SortByDate1);
-            completedTasksArr.reverse();
-            FdateComp*=-1;
-          
-          }
-        }
-        else if (value==4)
-        {
-          if (FdateArchiv==1){
-          archivedTasksArr.sort(SortByDate1);
-          FdateArchiv*=-1;
-          
-        }
-        else if (FnameArchiv==-1){
-            archivedTasksArr.sort(SortByDate1);
-            archivedTasksArr.reverse();
-            FdateArchiv*=-1;
-            
-        }
-      }
-     
-     });       
+// Drawing the all tasks table for loading only.
+function drawAllTasksTable() {
+	for (i = 0; i < allTasksArr.length; i++){
+    var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
+    var currStatus;
+    if (newTask.status == 1)
+        currStatus = "In Progress";
+    else if (newTask.status == 0)
+        currStatus = "Completed";
+    else
+        currStatus = "Archived";
+                  
+    $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+    }
 }
 
 // Updating the sizes to be displayed in the left menu
@@ -281,6 +165,7 @@ function deleteTask()
                         .draw(false);
                     }                
                 }
+                sendArrays();
                 updateSize();        
         });
 }
@@ -305,7 +190,8 @@ function moveComplete()
                       currTasksArr.splice(currIndex, 1);
                       allTasksArr[rowINDEX].status = 0;
                       completedTasksArr.push(movableTask);  
-                      updateSize();          
+                      updateSize();
+                      sendArrays();          
                   }    
               }
               else if (value == 2)
@@ -319,9 +205,10 @@ function moveComplete()
                       completedTasksArr.push(movableTask);  
                       table.row( $(this).parents('tr')).remove().draw();
                       updateSize();
+                      sendArrays();
                   }
               }
-    });  
+    });
 }
 
 function moveArchive()
@@ -345,6 +232,7 @@ function moveArchive()
                       archivedTasksArr.push(movableTask);
                       table.row( $(this).parents('tr')).remove().draw();
                       updateSize();
+                      sendArrays();
                   }
                   else if (movableTask.status == 0)
                   {
@@ -354,6 +242,7 @@ function moveArchive()
                       archivedTasksArr.push(movableTask);
                       table.row( $(this).parents('tr')).remove().draw();
                       updateSize();
+                      sendArrays();
                   }    
               }
               else if (value == 2)
@@ -366,6 +255,7 @@ function moveArchive()
                   archivedTasksArr.push(movableTask);  
                   table.row( $(this).parents('tr')).remove().draw();
                   updateSize();
+                  sendArrays();
                   
               }
               else if (value == 3)
@@ -377,6 +267,7 @@ function moveArchive()
                   archivedTasksArr.push(movableTask);
                   table.row( $(this).parents('tr')).remove().draw();
                   updateSize();
+                  sendArrays();
               }
     }); 
 }
@@ -397,6 +288,7 @@ function editTask()
               $('#editDate').val(currTasksArr[rowINDEX].date);
           
     });
+    sendArrays();
 }
 
 // Drawing the table
@@ -417,12 +309,13 @@ function drawTable()
         $('#here').html(concat);            
         $('#datatable').DataTable();  
 
-        deleteTask();
-        moveComplete();
-        moveArchive();
-        editTask();
-        sortByname();
-        sortBydate()
+        if (FirstLoadStop != 0) {
+          deleteTask();
+          moveComplete();
+          moveArchive();
+          editTask(); 
+        }
+        FirstLoadStop = 1;    
 }
 
 // Child row
@@ -466,22 +359,62 @@ function childRowMan()
       });
 }
 
-$("ProjectPh1V1").ready(function(){
-        drawTable();
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+ 
+function loadData()
+{
+   var firstname;
+   var flag = 0;
+    $.ajax ({
+        url: '/arraydata',
+        type: 'GET',
+        success: function(data) {
+          if(data != null && data != "") {
+ 
+            allTasksArr = data['allTasksArray[]'];
+            currTasksArr = data['inProgressArray[]'];          
+            completedTasksArr = data['completedArray[]'];          
+            archivedTasksArr = data['archivedArray[]'];
+            var split = data['name'];
+            firstname = split;  
+            flag = 1;
+            if (flag == 1)
+              {
+                firstname = capitalizeFirstLetter(firstname);
+                $('#username').text(" " + firstname);
+              }
+              drawAllTasksTable();
+              updateSize();    
+              childRowMan();
+            if(allTasksArr == null || completedTasksArr == null || archivedTasksArr == null) {
+              allTasksArr = [];
+              currTasksArr = [];
+              completedTasksArr = [];
+              archivedTasksArr = [];
+            }            
+          }
+        }
+      });  
+}
+
+$("ProjectPh1V1").ready(function(){   
+  		  loadData();
+  		  drawTable();
         updateSize();  
-        
         $('#555 > #all').on('click', function(){      
             $('#555 > #all').addClass('active');
             $('#555 > #inProg').removeClass('active');
             $('#555 > #compTasks').removeClass('active');
             $('#555 > #archiv').removeClass('active');
             value = 1;
-
             drawTable();   
-                
+            sendArrays();
+            
             $("h3").text("All Tasks");
 
-            for (i = 0; i <allTasksArr.length; i++){
+            for (i = 0; i < allTasksArr.length; i++){
                 var newTask = new task(allTasksArr[i].name, allTasksArr[i].description, allTasksArr[i].status, allTasksArr[i].date);
                 var currStatus;
                 if (newTask.status == 1)
@@ -491,7 +424,7 @@ $("ProjectPh1V1").ready(function(){
                 else
                     currStatus = "Archived";
                   
-                $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
             }
             updateSize();     
             childRowMan();
@@ -507,7 +440,8 @@ $("ProjectPh1V1").ready(function(){
                   value = 2;  
 
                   drawTable();    
-                
+             	  sendArrays();
+            
                   $("h3").text("In Progress");
           
                 for (i = 0; i < currTasksArr.length; i++){
@@ -531,7 +465,8 @@ $("ProjectPh1V1").ready(function(){
             value = 3;
 
             drawTable();   
-                
+     		sendArrays();
+                      
             $("h3").text("Completed Tasks");
       
             for (i = 0; i < completedTasksArr.length; i++){
@@ -543,7 +478,7 @@ $("ProjectPh1V1").ready(function(){
             childRowMan();
       });
 
-      $('#555 > #archiv').on('click',function(){
+      $('#555 > #archiv').on('click',function() {
         $('#555 > #archiv').addClass('active');
         $('#555 > #all').removeClass('active');
         $('#555 > #inProg').removeClass('active');
@@ -552,6 +487,7 @@ $("ProjectPh1V1").ready(function(){
         value = 4;
 
         drawTable();    
+        sendArrays();
             
         $("h3").text("Archived");
 
@@ -567,14 +503,12 @@ $("ProjectPh1V1").ready(function(){
             childRowMan();    
       });
 
-      $('#editDate').datepicker();
-      $('#datepicker').datepicker();
-      $('#newTaskButton').click(function(){
+      $('#newTaskButton').click(function() {
          
           // Getting the values of the input
           var taskName = $('#focusedInput').val();
           var taskDescrip = $('#inputDefault').val();
-          var taskDate = $('#datepicker').val();
+          var taskDate = $('#date').val();
           
           /// Here there should be the validations for the input by the user to ensure that he entered anything.
           if (taskName.length == 0)
@@ -588,25 +522,6 @@ $("ProjectPh1V1").ready(function(){
               conc += '&times;';
               conc += '</button>';
               conc += 'Please enter a name for the task.';
-              conc += '</div>';
-              $('#alerterror').html(conc);
-              
-              // Closing the modal
-                  $('#myModal').on('hidden.bs.modal', function () {
-                    $(this).find("input,textarea,select").val('').end();
-              });
-          }
-          else if (taskDescrip.length == 0)
-          {
-              // freezing the modal
-              $('#newTaskButton').removeAttr("data-dismiss");
-
-              // Displaying error message
-              var conc = '<div class="alert alert-dismissible alert-danger" id="alertmessage">';
-              conc += '<button type="button" class="close" data-dismiss="alert">';
-              conc += '&times;';
-              conc += '</button>';
-              conc +='Please enter a description for the task';
               conc += '</div>';
               $('#alerterror').html(conc);
               
@@ -633,7 +548,6 @@ $("ProjectPh1V1").ready(function(){
               $('#myModal').on('hidden.bs.modal', function () {
                     $(this).find("input,textarea,select").val('').end();
               });
-
           }
           else
           { 
@@ -666,7 +580,7 @@ $("ProjectPh1V1").ready(function(){
                           else
                               currStatus = "Archived";
                             
-                         $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
+                         $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm"  id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>' ]).draw();
                             
                       }
                       updateSize();
@@ -719,7 +633,7 @@ $("ProjectPh1V1").ready(function(){
                           updateSize();
                           childRowMan();
                   }
-
+                  sendArrays();
                   // Closing the modal
                   $('#myModal').on('hidden.bs.modal', function () {
                     $(this).find("input,textarea,select").val('').end();
@@ -828,10 +742,10 @@ $("ProjectPh1V1").ready(function(){
                                 else
                                     currStatus = "Archived";
                             
-                                $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm" id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="Delete"><span class="glyphicon glyphicon-trash"></span></button><button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>']);                            
+                                $('#datatable').DataTable().row.add([newTask.name, '<td><td><button type="button" class="btn btn-default btn-sm" id="childROW"> <span class="glyphicon glyphicon-plus-sign"></span> </button></td></td>', currStatus, newTask.date,'<button type="button" class="btn btn-default btn-sm" id="done"><span class="glyphicon glyphicon-ok"></span></button><button type="button" class="btn btn-default btn-sm" id="save"><span class="glyphicon glyphicon-folder-open"></span></button>']);                            
                             }
 
-                            
+                            sendArrays();
                             updateSize();
                             childRowMan();
                   
@@ -857,9 +771,8 @@ $("ProjectPh1V1").ready(function(){
       <ul class="nav navbar-nav navbar-right">
       <li class="dropdown">
          <!-- Here should be the name of the user -->
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-user"></span> Mohamed Tolba<span class="caret"></span> </a>
+         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="glyphicon glyphicon-user" id="username"></span><span class="caret"></span> </a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Settings</a></li> <!-- We can make an option to change the display name of the user -->
             <li><a href="homepage.html" id="logout">Logout</a></li>
           </ul>
       </li>
@@ -873,11 +786,10 @@ $("ProjectPh1V1").ready(function(){
     <div class="row content">
         <div class="col-sm-2 sidenav" id="leftmenu">
             <ul class="nav nav-pills nav-stacked" id="555">
-                 
-                <li id="all" value=1 class="active"><a href="#section1">All Tasks<span class="badge" id="allsize"></span></a></li>
-                <li id="inProg" value=2><a href="#section2" >In Progress<span class="badge" id="currsize"></span></a></li>
-                <li id="compTasks" value=3><a href="#section3">Completed Tasks<span class="badge" id="completedsize"></span></a></li>
-                <li id="archiv" value=4><a href="#section4">Archived<span class="badge" id="archivedsize"></a></li>
+                <li id="all" value=1 class="active"><a href="#AllTasks">All Tasks<span class="badge" id="allsize"></span></a></li>
+                <li id="inProg" value=2><a href="#InProgress" >In Progress<span class="badge" id="currsize"></span></a></li>
+                <li id="compTasks" value=3><a href="#CompletedTasks">Completed Tasks<span class="badge" id="completedsize"></span></a></li>
+                <li id="archiv" value=4><a href="#ArchivedTasks">Archived<span class="badge" id="archivedsize"></a></li>
             </ul><br>
         </div>
 
@@ -906,10 +818,10 @@ $("ProjectPh1V1").ready(function(){
                     </div>
                     <div class="form-group">
                       
-                      <input type="text" class="form-control" id="inputDefault" placeholder="Task Description">
+                      <input type="text" class="form-control" id="inputDefault" placeholder="Task Description(Optional)">
                     </div>
                     <div class="form-group">         
-                  <input type="text" class="form-control" id="datepicker" placeholder="Task due date(optional)">
+                  <input type="date" class="form-control" id="date" placeholder="Task due date(Optional)">
                       
                     </div>
                   </div>
@@ -938,7 +850,7 @@ $("ProjectPh1V1").ready(function(){
                       <input type="text" class="form-control" id="editDescrip">
                     </div>
                     <div class="form-group">         
-                  <input type="text" class="form-control" id="editDate">
+                  <input type="date" class="form-control" id="editDate">
                       
                     </div>
                   </div>
